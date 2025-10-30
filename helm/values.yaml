@@ -1,0 +1,9 @@
+image:
+  repository: flask-demo
+  tag: latest
+  pullPolicy: Never
+
+service:
+  type: ClusterIP
+  port: 80
+
