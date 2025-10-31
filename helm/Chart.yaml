@@ -1,4 +1,6 @@
 apiVersion: v2
-name: flask-demo
+name: sample-web
+description: A simple Flask web app
 version: 0.1.0
+appVersion: "1.0"
 

@@ -7,7 +7,7 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: self-hosted   # ✅ Dùng runner local (máy bạn)
 
     steps:
       - name: Checkout code
@@ -29,4 +29,31 @@ jobs:
           docker build -t $IMAGE_NAME:$IMAGE_TAG .
           docker push $IMAGE_NAME:$IMAGE_TAG
           echo "✅ Docker image pushed successfully!"
+
+  deploy:
+    runs-on: self-hosted   # ✅ Dùng cùng runner local (máy bạn)
+    needs: build           # ✅ Chạy sau khi build thành công
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Verify Minikube context
+        run: |
+          echo "➡️ Checking Kubernetes context..."
+          kubectl config use-context minikube
+          kubectl get nodes
+
+      - name: Deploy to Minikube using Helm
+        run: |
+          IMAGE_NAME=lamluongkhe/sample-web
+          IMAGE_TAG=latest
+
+          echo "🚀 Deploying $IMAGE_NAME:$IMAGE_TAG..."
+          helm upgrade --install sample-web ./helm \
+            --set image.repository=$IMAGE_NAME \
+            --set image.tag=$IMAGE_TAG \
+            --namespace default --create-namespace
+
+          echo "✅ Helm deploy complete!"
 
