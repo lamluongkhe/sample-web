@@ -1,4 +1,4 @@
-name: CI/CD Pipeline Demo
+name: CI/CD Test
 
 on:
   push:
@@ -6,33 +6,27 @@ on:
       - main
 
 jobs:
-  build-and-push:
+  build:
     runs-on: ubuntu-latest
 
     steps:
-      # 1️⃣ Lấy code từ repo
       - name: Checkout code
         uses: actions/checkout@v4
 
-      # 2️⃣ Đăng nhập vào Docker Hub
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
       - name: Log in to Docker Hub
         uses: docker/login-action@v3
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
-      # 3️⃣ Đặt tag tự động dựa trên số build run
-      - name: Set image tag
-        id: vars
-        run: echo "TAG=build-${{ github.run_number }}" >> $GITHUB_ENV
-
-      # 4️⃣ Build và push Docker image
       - name: Build and Push Docker Image
         run: |
-          docker build -t ${{ secrets.DOCKERHUB_USERNAME }}/flask-test:${{ env.TAG }} .
-          docker push ${{ secrets.DOCKERHUB_USERNAME }}/flask-test:${{ env.TAG }}
-
-      # 5️⃣ In ra thông tin
-      - name: Print Docker Image Info
-        run: echo "✅ Image pushed: ${{ secrets.DOCKERHUB_USERNAME }}/flask-test:${{ env.TAG }}"
+          IMAGE_NAME=lamluongkhe/sample-web
+          IMAGE_TAG=latest
+          docker build -t $IMAGE_NAME:$IMAGE_TAG .
+          docker push $IMAGE_NAME:$IMAGE_TAG
+          echo "✅ Docker image pushed successfully!"
 
