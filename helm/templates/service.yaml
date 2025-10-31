@@ -8,6 +8,6 @@ spec:
     app: {{ .Chart.Name }}
   ports:
     - port: {{ .Values.service.port }}
-      targetPort: 5000
+      targetPort: 80
       nodePort: {{ .Values.service.nodePort }}
 
