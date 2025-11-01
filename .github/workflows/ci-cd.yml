@@ -1,15 +1,13 @@
-✔ ~/Desktop/sample-web [main|✔] 
-14:59 $ cat /tmp/ci-cd.yml 
 name: CI/CD Test
 
 on:
   push:
     branches:
-      - main
+      - main   # 🔹 Chạy mỗi khi bạn push code lên branch main
 
 jobs:
   build:
-    runs-on: self-hosted   # ✅ Dùng runner local (máy bạn)
+    runs-on: self-hosted   # 🔹 Dùng runner local (máy bạn)
 
     steps:
       - name: Checkout code
@@ -25,16 +23,24 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and Push Docker Image
+        id: docker_build
         run: |
           IMAGE_NAME=lamluongkhe/sample-web
-          IMAGE_TAG=latest
+          IMAGE_TAG=$(date +%Y%m%d%H%M%S)
+
+          echo "🛠️ Building image $IMAGE_NAME:$IMAGE_TAG ..."
           docker build -t $IMAGE_NAME:$IMAGE_TAG .
           docker push $IMAGE_NAME:$IMAGE_TAG
-          echo "✅ Docker image pushed successfully!"
+
+          # Ghi lại biến môi trường để job sau sử dụng
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+
+          echo "✅ Image pushed successfully: $IMAGE_NAME:$IMAGE_TAG"
 
   deploy:
-    runs-on: self-hosted   # ✅ Dùng cùng runner local (máy bạn)
-    needs: build           # ✅ Chạy sau khi build thành công
+    runs-on: self-hosted     # 🔹 Cũng chạy trên runner local
+    needs: build             # 🔹 Chạy sau khi job build hoàn tất
 
     steps:
       - name: Checkout code
@@ -48,14 +54,18 @@ jobs:
 
       - name: Deploy to Minikube using Helm
         run: |
-          IMAGE_NAME=lamluongkhe/sample-web
-          IMAGE_TAG=latest
-
-          echo "🚀 Deploying $IMAGE_NAME:$IMAGE_TAG..."
+          echo "🚀 Deploying to Minikube with Helm..."
           helm upgrade --install sample-web ./helm \
-            --set image.repository=$IMAGE_NAME \
-            --set image.tag=$IMAGE_TAG \
+            --set image.repository=${{ env.IMAGE_NAME }} \
+            --set image.tag=${{ env.IMAGE_TAG }} \
             --namespace default --create-namespace
 
-          echo "✅ Helm deploy complete!"
+          echo "✅ Helm deployment completed!"
+
+      - name: Verify Deployment
+        run: |
+          echo "🔍 Checking deployed image..."
+          kubectl get deploy sample-web -o yaml | grep image:
+          echo "🔍 Pods status:"
+          kubectl get pods -l app=sample-web
 
