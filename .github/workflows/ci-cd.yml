@@ -7,7 +7,11 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted  # ✅ Dùng runner local (máy bạn)
+    runs-on: self-hosted
+
+    outputs:
+      IMAGE_NAME: ${{ steps.build.outputs.IMAGE_NAME }}
+      IMAGE_TAG: ${{ steps.build.outputs.IMAGE_TAG }}
 
     steps:
       - name: Checkout code
@@ -23,16 +27,16 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and Push Docker Image
-        id: docker_build
+        id: build
         run: |
           IMAGE_NAME=lamluongkhe/sample-web
           IMAGE_TAG=$(date +%Y%m%d%H%M%S)
           echo "🛠️ Building image $IMAGE_NAME:$IMAGE_TAG ..."
           docker build -t $IMAGE_NAME:$IMAGE_TAG .
           docker push $IMAGE_NAME:$IMAGE_TAG
-          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
-          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
-          echo "✅ Image pushed successfully: $IMAGE_NAME:$IMAGE_TAG"
+          echo "✅ Image pushed successfully!"
+          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_OUTPUT
+          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_OUTPUT
 
   deploy:
     runs-on: self-hosted
@@ -50,14 +54,15 @@ jobs:
 
       - name: Deploy to Minikube using Helm
         run: |
-          echo "🚀 Deploying to Minikube with Helm..."
+          IMAGE_NAME=${{ needs.build.outputs.IMAGE_NAME }}
+          IMAGE_TAG=${{ needs.build.outputs.IMAGE_TAG }}
+          echo "🚀 Deploying $IMAGE_NAME:$IMAGE_TAG ..."
           helm upgrade --install sample-web ./helm \
-            --set image.repository=${{ env.IMAGE_NAME }} \
-            --set image.tag=${{ env.IMAGE_TAG }} \
+            --set image.repository=$IMAGE_NAME \
+            --set image.tag=$IMAGE_TAG \
             --namespace default --create-namespace
 
       - name: Verify Deployment
         run: |
-          echo "🔍 Checking pods status..."
           kubectl get pods -n default -l app=sample-web
 
