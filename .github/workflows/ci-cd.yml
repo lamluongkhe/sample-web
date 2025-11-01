@@ -1,3 +1,5 @@
+✔ ~/Desktop/sample-web [main|✔] 
+14:59 $ cat /tmp/ci-cd.yml 
 name: CI/CD Test
 
 on:
@@ -7,11 +9,7 @@ on:
 
 jobs:
   build:
-    runs-on: self-hosted
-
-    outputs:
-      IMAGE_NAME: ${{ steps.build.outputs.IMAGE_NAME }}
-      IMAGE_TAG: ${{ steps.build.outputs.IMAGE_TAG }}
+    runs-on: self-hosted   # ✅ Dùng runner local (máy bạn)
 
     steps:
       - name: Checkout code
@@ -27,20 +25,16 @@ jobs:
           password: ${{ secrets.DOCKERHUB_TOKEN }}
 
       - name: Build and Push Docker Image
-        id: build
         run: |
           IMAGE_NAME=lamluongkhe/sample-web
-          IMAGE_TAG=$(date +%Y%m%d%H%M%S)
-          echo "🛠️ Building image $IMAGE_NAME:$IMAGE_TAG ..."
+          IMAGE_TAG=latest
           docker build -t $IMAGE_NAME:$IMAGE_TAG .
           docker push $IMAGE_NAME:$IMAGE_TAG
-          echo "✅ Image pushed successfully!"
-          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_OUTPUT
-          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_OUTPUT
+          echo "✅ Docker image pushed successfully!"
 
   deploy:
-    runs-on: self-hosted
-    needs: build
+    runs-on: self-hosted   # ✅ Dùng cùng runner local (máy bạn)
+    needs: build           # ✅ Chạy sau khi build thành công
 
     steps:
       - name: Checkout code
@@ -54,15 +48,14 @@ jobs:
 
       - name: Deploy to Minikube using Helm
         run: |
-          IMAGE_NAME=${{ needs.build.outputs.IMAGE_NAME }}
-          IMAGE_TAG=${{ needs.build.outputs.IMAGE_TAG }}
-          echo "🚀 Deploying $IMAGE_NAME:$IMAGE_TAG ..."
+          IMAGE_NAME=lamluongkhe/sample-web
+          IMAGE_TAG=latest
+
+          echo "🚀 Deploying $IMAGE_NAME:$IMAGE_TAG..."
           helm upgrade --install sample-web ./helm \
             --set image.repository=$IMAGE_NAME \
             --set image.tag=$IMAGE_TAG \
             --namespace default --create-namespace
 
-      - name: Verify Deployment
-        run: |
-          kubectl get pods -n default -l app=sample-web
+          echo "✅ Helm deploy complete!"
 
