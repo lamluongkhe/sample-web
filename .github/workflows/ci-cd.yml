@@ -32,11 +32,19 @@ jobs:
           docker build -t $IMAGE_NAME:$IMAGE_TAG .
           docker push $IMAGE_NAME:$IMAGE_TAG
 
-          # Ghi lại biến môi trường để job sau sử dụng
-          echo "IMAGE_NAME=$IMAGE_NAME" >> $GITHUB_ENV
-          echo "IMAGE_TAG=$IMAGE_TAG" >> $GITHUB_ENV
+          # Ghi file .env để chuyển sang job deploy
+          echo "IMAGE_NAME=$IMAGE_NAME" > image-info.env
+          echo "IMAGE_TAG=$IMAGE_TAG" >> image-info.env
 
           echo "✅ Image pushed successfully: $IMAGE_NAME:$IMAGE_TAG"
+          echo "📦 Saved image-info.env:"
+          cat image-info.env
+
+      - name: Upload image info artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: image-info
+          path: image-info.env
 
   deploy:
     runs-on: self-hosted     # 🔹 Cũng chạy trên runner local
@@ -46,18 +54,25 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Verify Minikube context
-        run: |
-          echo "➡️ Checking Kubernetes context..."
-          kubectl config use-context minikube
-          kubectl get nodes
+      - name: Download image info
+        uses: actions/download-artifact@v4
+        with:
+          name: image-info
+          path: .
 
-      - name: Deploy to Minikube using Helm
+      - name: Verify and load image env
         run: |
+          echo "📦 Loading image info..."
+          cat image-info.env
+          source image-info.env
+
+          echo "Loaded IMAGE_NAME=$IMAGE_NAME"
+          echo "Loaded IMAGE_TAG=$IMAGE_TAG"
+
           echo "🚀 Deploying to Minikube with Helm..."
           helm upgrade --install sample-web ./helm \
-            --set image.repository=${{ env.IMAGE_NAME }} \
-            --set image.tag=${{ env.IMAGE_TAG }} \
+            --set image.repository=$IMAGE_NAME \
+            --set image.tag=$IMAGE_TAG \
             --namespace default --create-namespace
 
           echo "✅ Helm deployment completed!"
