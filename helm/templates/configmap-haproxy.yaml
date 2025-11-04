@@ -24,9 +24,9 @@ data:
     backend flask_back
         balance roundrobin
         option httpchk GET /
-        # HAProxy trỏ trực tiếp tới Service flask-web trong cluster qua DNS
-        server web1 flask-web:5000 check
-        server web2 flask-web:5000 check
+        # ⚙️ HAProxy trỏ trực tiếp tới Service flask-web trong cluster qua DNS
+        server web1 flask-web.default.svc.cluster.local:5000 check
+        server web2 flask-web.default.svc.cluster.local:5000 check
 
     listen stats
         bind *:8404

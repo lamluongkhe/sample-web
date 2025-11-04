@@ -3,15 +3,16 @@ kind: Service
 metadata:
   name: haproxy
 spec:
-  type: NodePort
   selector:
     app: haproxy
+  type: {{ .Values.haproxy.service.type }}
   ports:
     - name: http
-      port: 80
-      targetPort: 80
-      nodePort: {{ .Values.service.nodePort }}
+      port: {{ .Values.haproxy.service.ports.http }}
+      targetPort: {{ .Values.haproxy.service.ports.http }}
+      nodePort: {{ .Values.haproxy.service.nodePorts.http }}
     - name: stats
-      port: 8404
-      targetPort: 8404
+      port: {{ .Values.haproxy.service.ports.stats }}
+      targetPort: {{ .Values.haproxy.service.ports.stats }}
+      nodePort: {{ .Values.haproxy.service.nodePorts.stats }}
 

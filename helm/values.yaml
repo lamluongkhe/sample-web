@@ -1,5 +1,9 @@
+# -----------------------------------
+# Helm values.yaml - web-haproxy-ci-cd
+# -----------------------------------
+
 image:
-  repository: lamluongkhe/web          # Image Flask của bạn
+  repository: lamluongkhe/web
   tag: latest
   pullPolicy: Always
 
@@ -8,15 +12,25 @@ mysql:
   rootPassword: root
   database: flask_login_demo
   user: kheuser
-  password: "123"
-
-service:
-  type: NodePort
-  port: 80
-  nodePort: 30081                      # ⚠️ KHÔNG trùng với HAProxy (HAProxy đang dùng 30080)
+  password: 123
 
 haproxy:
   image: haproxy:3.2.4
   statsUser: admin
   statsPass: 123456
+  service:
+    type: NodePort
+    ports:
+      http: 80
+      stats: 8404
+    nodePorts:
+      http: 30080
+      stats: 31162
+
+web:
+  service:
+    type: ClusterIP
+    port: 80
+    targetPort: 5000
+
 

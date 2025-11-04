@@ -5,10 +5,9 @@ metadata:
 spec:
   selector:
     app: flask-web
+  type: {{ .Values.web.service.type }}
   ports:
     - name: http
-      port: 80             # Cổng Service expose ra trong cluster
-      targetPort: 5000     # Flask container chạy cổng 5000
-      nodePort: {{ .Values.service.nodePort }}
-  type: {{ .Values.service.type }}
+      port: {{ .Values.web.service.port }}
+      targetPort: {{ .Values.web.service.targetPort }}
 
