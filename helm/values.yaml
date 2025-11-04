@@ -1,10 +1,20 @@
 image:
-  repository: lamluongkhe/sample-web
+  repository: lamluongkhe/web
   tag: latest
   pullPolicy: Always
 
+mysql:
+  image: mysql:8.0
+  rootPassword: root
+  database: flask_login_demo
+  user: kheuser
+  password: 123
+
 service:
   type: NodePort
-  port: 80
   nodePort: 30080
-
+  port: 80
+haproxy:
+  image: haproxy:3.2.4                        # Image HAProxy chính thức
+  statsUser: admin                            # User truy cập trang /haproxy?stats
+  statsPass: 123456    

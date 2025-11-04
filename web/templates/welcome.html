@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Chúc mừng</title>
+</head>
+<body>
+    <h2>Chúc mừng {{ username }} đã đăng nhập thành công!</h2>
+    <p>Thời gian đăng nhập: {{ session['login_time'] }}</p>
+    <a href="{{ url_for('session_info') }}">Xem toàn bộ session</a><br>
+    <a href="{{ url_for('logout') }}">Đăng xuất</a>
+</body>
+</html>
+

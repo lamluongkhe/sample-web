@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Thông tin Session</title>
+</head>
+<body>
+    <h2>Thông tin Session hiện tại</h2>
+    <table border="1" cellpadding="5" cellspacing="0">
+        <tr>
+            <th>Key</th>
+            <th>Value</th>
+        </tr>
+        {% for key, value in session_data.items() %}
+        <tr>
+            <td>{{ key }}</td>
+            <td>{{ value }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+    <br>
+    <a href="{{ url_for('welcome') }}">Quay lại trang chào mừng</a><br>
+    <a href="{{ url_for('logout') }}">Đăng xuất</a>
+</body>
+</html>
+
