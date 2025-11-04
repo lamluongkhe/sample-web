@@ -1,5 +1,5 @@
 image:
-  repository: lamluongkhe/web
+  repository: lamluongkhe/web          # Image Flask của bạn
   tag: latest
   pullPolicy: Always
 
@@ -8,13 +8,15 @@ mysql:
   rootPassword: root
   database: flask_login_demo
   user: kheuser
-  password: 123
+  password: "123"
 
 service:
   type: NodePort
-  nodePort: 30080
   port: 80
+  nodePort: 30081                      # ⚠️ KHÔNG trùng với HAProxy (HAProxy đang dùng 30080)
+
 haproxy:
-  image: haproxy:3.2.4                        # Image HAProxy chính thức
-  statsUser: admin                            # User truy cập trang /haproxy?stats
-  statsPass: 123456    
+  image: haproxy:3.2.4
+  statsUser: admin
+  statsPass: 123456
+
