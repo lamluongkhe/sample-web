@@ -25,8 +25,8 @@ data:
         balance roundrobin
         option httpchk GET /
         # ⚙️ HAProxy trỏ trực tiếp tới Service flask-web trong cluster qua DNS
-        server web1 flask-web.default.svc.cluster.local:80 check
-
+        server web1 flask-web.default.svc.cluster.local:5000 check
+        
     listen stats
         bind *:8404
         stats enable

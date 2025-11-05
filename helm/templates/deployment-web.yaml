@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: flask-web
 spec:
-  replicas: 2
+  replicas: 1                # ✅ chỉ chạy 1 pod Flask
   selector:
     matchLabels:
       app: flask-web
@@ -17,7 +17,7 @@ spec:
           image: "{{ .Values.image.repository }}:{{ .Values.image.tag }}"
           imagePullPolicy: {{ .Values.image.pullPolicy }}
           ports:
-            - containerPort: 80
+            - containerPort: 5000            # ✅ Flask app chạy port 5000
           env:
             - name: MYSQL_HOST
               value: "mysql"

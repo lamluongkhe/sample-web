@@ -14,5 +14,4 @@ spec:
     - name: stats
       port: {{ .Values.haproxy.service.ports.stats }}
       targetPort: {{ .Values.haproxy.service.ports.stats }}
-      nodePort: {{ .Values.haproxy.service.nodePorts.stats }}
 
