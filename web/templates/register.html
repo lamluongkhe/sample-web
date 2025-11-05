@@ -1,21 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Đăng nhập</title>
+    <title>Đăng ký</title>
 </head>
 <body>
-    <h2>Đăng nhập</h2>
+    <h2>Đăng ký tài khoản</h2>
     <form method="POST">
         <label>Tên đăng nhập:</label><br>
         <input type="text" name="username" required><br><br>
         <label>Mật khẩu:</label><br>
         <input type="password" name="password" required><br><br>
-        <!-- Nút đăng nhập -->
-        <button type="submit">Đăng nhập</button>
-        <!-- Nút đăng ký -->
-        <a href="{{ url_for('register') }}">
-            <button type="button">Đăng ký</button>
-        </a>
+        <button type="submit">Đăng ký</button>
     </form>
 </body>
 </html>

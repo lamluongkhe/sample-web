@@ -47,6 +47,28 @@ def login():
 
     return render_template('login.html')
 
+@app.route('/register', methods=['GET', 'POST'])
+def register():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        # Kiểm tra user đã tồn tại chưa
+        cursor.execute("SELECT * FROM users WHERE username=%s", (username,))
+        if cursor.fetchone():
+            return "Tên đăng nhập đã tồn tại!"
+
+        # Thêm user mới vào database
+        cursor.execute("INSERT INTO users (username, password) VALUES (%s, %s)", (username, password))
+        db.commit()
+
+        # Sau khi đăng ký thành công → redirect về login
+        return redirect(url_for('login'))
+
+    # GET request → hiển thị form đăng ký
+    return render_template('register.html')
+
+
 
 @app.route('/welcome')
 def welcome():
