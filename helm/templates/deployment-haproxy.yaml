@@ -11,6 +11,9 @@ spec:
     metadata:
       labels:
         app: haproxy
+      annotations:
+        # ✅ Trigger rollout khi ConfigMap haproxy-config thay đổi
+        checksum/config: {{ include (print $.Template.BasePath "/configmap-haproxy.yaml") . | sha256sum }}
     spec:
       containers:
         - name: haproxy
