@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: flask-web
 spec:
-  replicas: 1                # ✅ chỉ chạy 1 pod Flask
+  replicas: 2                # ✅ chỉ chạy 1 pod Flask
   selector:
     matchLabels:
       app: flask-web
