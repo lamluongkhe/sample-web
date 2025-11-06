@@ -15,7 +15,7 @@ spec:
             pathType: Prefix
             backend:
               service:
-                name: nginx-proxy
+                name: nginx       # 🔹 Đúng tên service của bạn
                 port:
                   number: 80
 {{- end }}
