@@ -1,5 +1,5 @@
 # -----------------------------------
-# Helm values.yaml - web-haproxy-ci-cd
+# Helm values.yaml - web-nginx-ci-cd
 # -----------------------------------
 
 image:
@@ -14,23 +14,35 @@ mysql:
   user: kheuser
   password: 123
 
-haproxy:
-  image: haproxy:3.2.4
-  statsUser: admin
-  statsPass: 123456
-  service:
-    type: NodePort
-    ports:
-      http: 80
-      stats: 8404
-    nodePorts:
-      http: 30080
-      stats: 31162
+    #haproxy:
+    #  image: haproxy:3.2.4
+    #  statsUser: admin
+    #  statsPass: 123456
+    #  service:
+    #    type: NodePort
+    #    ports:
+    #      http: 80
+    #      stats: 8404
+    #    nodePorts:
+    #      http: 30080
+    #      stats: 31162
 
+
+    
 web:
   service:
     type: ClusterIP
     port: 80
     targetPort: 5000
 
+nginx:
+  image: nginx:1.27
+  service:
+    type: ClusterIP
+    port: 80
+
+
+ingress:
+  enabled: true
+  host: flask.local
 

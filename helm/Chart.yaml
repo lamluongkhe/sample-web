@@ -1,6 +1,6 @@
 apiVersion: v2
-name: web-haproxy-ci-cd
-description: Flask + MySQL + HAProxy demo with Helm CI/CD
+name: web-ngin-ci-cd
+description: Flask + MySQL + Nginx demo with Helm CI/CD
 version: 0.1.0
 appVersion: "1.0"
 

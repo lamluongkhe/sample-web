@@ -7,7 +7,6 @@ spec:
     app: flask-web
   type: {{ .Values.web.service.type }}
   ports:
-    - name: http
-      port: {{ .Values.web.service.port }}
+    - port: {{ .Values.web.service.port }}
       targetPort: {{ .Values.web.service.targetPort }}
 
